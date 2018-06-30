@@ -1,0 +1,26 @@
+.main{
+    width:1000px;
+    height:800px;
+    margin: auto;
+   
+}
+.list-group button {
+    background: none;
+    border: 0;
+    color: red;
+    outline: 0;
+    float: right;
+    font-weight: bold; 
+}
+.text{
+    width:150px;
+    float:left;
+}
+.time{
+   margin-left: 100px;
+   float: left;
+}
+.clear{
+    clear: both;
+}
+

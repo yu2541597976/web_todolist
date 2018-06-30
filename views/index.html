@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>我的一天</title>
+        <script src="js/jquery/2.0.0/jquery.min.js"></script>
+        <link type="text/css" href="css/bootstrap/3.3.6/bootstrap.min.css" rel="stylesheet">
+        <script src="js/bootstrap/3.3.6/bootstrap.min.js"></script>
+        
+        <link type="text/css" href="assets/css/bootstrap.min.css" rel="stylesheet" />
+		<link type="text/css" rel="stylesheet" href="assets/css/font-awesome.min.css" />
+		<link type="text/css" rel="stylesheet" href="assets/css/ace.min.css" />
+		<link type="text/css" rel="stylesheet" type="text/css" href="/css/index.css">
+    </head>
+    <body>
+        <div class="main" id="app">
+            <div class="userinformation">
+                    <div class="navbar navbar-default" id="navbar">
+                            <script type="text/javascript">
+                                try{ace.settings.check('navbar' , 'fixed')}catch(e){}
+                            </script>
+                
+                            <div class="navbar-container" id="navbar-container">
+                                <div class="navbar-header pull-left">
+                                    <a href="#" class="navbar-brand">
+                                        <div style="float:left">
+                                            <small>
+                                                <i class="icon-leaf"></i>
+                                                代办清单系统
+                                            </small>
+                                        </div>
+                                        <div style="float: left;">
+                                            <small>
+                                                <div style="margin-left: 50px;margin-top: 3px" id="time">
+
+                                                </div>
+                                            </small>
+                                        </div>
+                                        <div class="clear"></div>
+                                    </a>
+                                </div>
+                
+                                <div class="navbar-header pull-right" role="navigation">
+                                    <ul class="nav ace-nav">
+                                        <li class="grey">
+                                            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                                                <i class="icon-tasks"></i>
+                                                <span class="badge badge-grey">{{remainTask.length}}</span>
+                                            </a>
+                
+                                            <ul class="pull-right dropdown-navbar dropdown-menu dropdown-caret dropdown-close">
+                                                <li class="dropdown-header">
+                                                    <i class="icon-ok"></i>
+                                                    还有{{remainTask.length}}个任务未完成
+                                                </li>
+                                                <template v-for="task in remainTask">
+                                                    <li>
+                                                        <a href="#">
+                                                            <div class="clearfix">
+                                                                <span class="pull-left">{{task.text}}</span>
+                                                                <span class="pull-right">{{task.time}}</span>
+                                                            </div>
+                                                        </a>
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </li>
+                                        <li class="light-blue">
+                                            <a data-toggle="dropdown" href="#" class="dropdown-toggle">
+                                                <img class="nav-user-photo" src="img/touxiang.jpg" alt="my Photo" />
+                                                <span class="user-info">
+                                                    <small>欢迎光临,</small>
+                                                    余维洋
+                                                </span>
+                
+                                                <i class="icon-caret-down"></i>
+                                            </a>
+                
+                                            <ul class="user-menu pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+                                                <li>
+                                                    <a href="#">
+                                                        <i class="icon-cog"></i>
+                                                        设置
+                                                    </a>
+                                                </li>
+                                                <li class="divider"></li>
+                
+                                                <li>
+                                                    <a href="/logout">
+                                                        <i class="icon-off"></i>
+                                                        注销
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                       
+            </div>
+            
+          
+           
+            <div>
+                    <ul id="myTab" class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#mytoday" data-toggle="tab">
+                                    我的一天
+                                </a>
+                            </li>
+                            <li><a href="#toDo" data-toggle="tab">To-Do</a></li>
+                            <li>
+                                <a href="#xinjian" data-toggle="tab">新建清单</a>
+                            </li>
+                           
+                </ul>
+               
+            </div>
+                        
+        
+                        
+                        <div class="input-group col-md-3" style="margin-top:3px" >  
+                                <input type="text" class="form-control" style="height:42px;" placeholder="Search for..." v-model="search_name">
+                                <span class="input-group-btn">  
+                                    <button class="btn btn-info btn-search">搜索</button>  
+                                </span>  
+                        </div>
+                        <div class="pull-right">
+                            <button class="btn btn-primary" id="bttn" style="z-index: 200">切换背景</button>
+                            <button class="btn btn-primary" id="bttn1" style="z-index: 200">切换回来</button>
+                        </div>                          
+               <div id="myTabContent" class="tab-content">
+                    <div class="tab-pane fade in active" id="mytoday">
+                        
+                            <form>
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">
+                                            任务描述
+                                        </label>
+                                        <input type="text" class="form-control" placeholder="请输入你要添加的任务" style="width:200px" v-model="newTask.text">
+                                        <input type="date" v-model="newTask.time">
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-primary" type="submit" v-on:click="addTask">
+                                            添加任务
+                                        </button>
+                                    </div>
+                            </form>
+                            <p v-show="curTask.length>0">
+                                任务列表 ({{curTask.length}})
+                            </p>
+                            <ul class="list-group">
+                                    <div v-for="task in curTask">
+                                        <li class="list-group-item">
+                                            <span v-on:dblclick="editTask(task)" title="编辑任务">
+                                                    <div class="text">{{task.text}}</div>
+                                                    <div class="time">{{task.time}}</div>
+                                                    <div class="time">{{task.days}}</div>
+                                                    <div>
+                                                        <button v-on:click="completeTask(task)" title="任务完成">
+                                                            &#10004;
+                                                        </button>
+                                                    </div>
+                                                    <div>
+                                                        <button v-on:click="removeTask(task)" title="移除任务">
+                                                            &#10007;
+                                                        </button>
+                                                    <div>
+                                                    <div class="clear"></div>
+                                            </span>
+        
+                                        </li>
+                                    </div>
+                                    
+                            </ul>
+                    </div>
+                    <div class="tab-pane fade" id="toDo">
+                            <form>
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">
+                                            任务描述
+                                        </label>
+                                        <input type="text" class="form-control" placeholder="请输入你要添加的任务" style="width:200px" v-model="newTask.text">
+                                        <input type="date" v-model="newTask.time">
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-primary" type="submit" v-on:click="addTask">
+                                            添加任务
+                                        </button>
+                                    </div>
+                            </form>
+                            <p v-show="remainTask.length>0">
+                                任务列表 ({{remainTask.length}})
+                            </p>
+                            
+                            <ul class="list-group">
+                                <template v-for="task in remainTask">
+                                <li class="list-group-item">
+                                    <span v-on:dblclick="editTask(task)" title="编辑任务">
+                                            <div class="text">{{task.text}}</div>
+                                            <div class="time">{{task.time}}</div>
+                                            <div class="time">{{task.days}}</div>
+                                            <div>
+                                                <button v-on:click="completeTask(task)" title="任务完成">
+                                                    &#10004;
+                                                </button>
+                                            </div>
+                                            <div>
+                                                <button v-on:click="removeTask(task)" title="移除任务">
+                                                    &#10007;
+                                                </button>
+                                            <div>
+                                            <div class="clear"></div>
+                                    </span>
+ 
+                                </li>
+                                </template>
+                                
+                            </ul>
+                            <p>
+                                已完成的Task({{filterTask.length}})
+                            </p>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary" id="hide">隐藏</button>
+                                <button type="button" class="btn btn-primary" id="show">显示</button>
+                            </div>
+                            <ol class="list-group" id="ol1">
+                                <template v-for="task in filterTask"> 
+                                     <li class="list-group-item">
+                                        <div class="text">{{task.text}}</div>
+                                        <div class="time">{{task.time}}</div>
+                                        <div class="time">{{task.days}}</div>
+                                        <div>
+                                            <button v-on:click="nocompleteTask(task)" title="任务完成">
+                                                &#10004;
+                                            </button>
+                                        </div>
+                                        <div>
+                                            <button v-on:click="removeTask(task)" title="移除任务">
+                                                &#10007;
+                                            </button>
+                                        <div>
+                                        <div class="clear"></div>
+                                    </li>
+                                </template>
+                            </ol>
+                    </div>
+                    
+                    
+                    <div class="tab-pane fade" id="xinjian">
+                        
+                    </div>
+                </div>
+            </div>              
+        </div>    
+    </body>
+    <script src="js/dateformat.js"></script>
+    <script src="js/vue.js"></script>
+    
+
+    <script>
+        //存取localStorage中的数据
+        var store={    
+            save(key,value){  //es6函数写法
+                localStorage.setItem(key,JSON.stringify(value));  //将数据转换为json形式的字符串
+
+            },
+            fetch(key){
+                return JSON.parse(localStorage.getItem(key))||[];
+                //获得的数据是json字符串，需要用json.parse解析一下,若没取到就返回空
+            }
+        }
+        //取出所有的值
+        //到localStorage中取数据
+        var tasks=store.fetch("taskses");
+
+
+        var curDate = DateFormat.format(new Date(), 'yyyy-MM-dd');
+        var app = new Vue({ 
+                el: "#app",
+                data: {
+                    search_name:'',
+                  
+                    curDate:curDate,
+                    tasks: tasks,
+                   
+                    
+                    
+                    newTask:{
+                        text:'',
+                        complete:false,
+                        time:'',
+                      
+                    },
+                },
+                watch:{           
+                    //监控功能
+                    /* list:function(){      //监控list这个属性，当值发生变化时就会执行后面的函数
+                        store.save("miaov-new-class",this.list);
+                    }//浅监控*/
+                    tasks:{
+                        handler:function(){
+                            store.save("taskses",this.tasks);
+                        },
+                        deep:true          //深监控
+                    }
+                    },
+                methods: {
+                
+                    addTask: function(event) { //添加任务
+
+                        event.preventDefault();
+
+                        var now_date=this.getFormatYMD(Date.parse(new Date()));
+                        var sArr = now_date.split("-");
+                        var eArr = this.newTask.time.split("-");
+                        var sRDate = new Date(sArr[0], sArr[1], sArr[2]);
+                        var eRDate = new Date(eArr[0], eArr[1], eArr[2]);
+                        var days =  parseInt((eRDate-sRDate)/(24*60*60*1000)); 
+                        this.tasks.push({
+                            text: this.newTask.text,
+                            complete: false,
+                            time: this.newTask.time,
+                            days:days,
+                        
+                        });
+                        this.newTask = {
+                            text:'',
+                            complete:false,
+                            time:'',
+                            days:'',
+                            
+                        };
+                    },
+                    getFormatYMD:function(timesamp){
+                        var date = new Date(timesamp);
+                        Y = date.getFullYear() + '-';
+                        M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+                        D = date.getDate();
+                        D= D.toString().length==1 ? '0'+D:D;
+                        return Y+M+D;
+                    },
+                    addList(){
+                        var list={
+                            list_name:this.listname,
+                          
+                            }
+                        
+                        this.lists.push(list);
+                        this.listname='';
+                    },
+                    selectlist(index){
+                        this.lindex=index;
+                    },
+                    editTask: function(task) { //编辑任务
+                    
+                    this.removeTask(task);
+                    this.newTask.text = task.text;
+                    this.newTask.time=task.time;
+                    
+                    },
+                    sort:function(array){
+                        var matter;
+                        for(var i=0;i<array.length;i++) {
+                            for(var j=i+1;j<array.length;j++) {
+                                if(array[i].days>array[j].days) {
+                                    matter = array[i];
+                                    array[i] = array[j];
+                                    array[j] = matter;
+                                }
+                            }
+                        }
+                        return array;
+                    },
+                    removeTask: function(task) { //删除任务
+                    _tasks = this.tasks;
+                    _tasks.forEach(function(item, index) {
+                        if (item.text == task.text) {
+                        _tasks.splice(index, 1);
+                        }
+                    })
+                    },
+                    completeTask: function(task) { 
+                    task.complete = true; 
+                    },
+                    nocompleteTask: function(task) { 
+                    task.complete = false; 
+                    }
+                   
+                   
+                },
+                
+                computed: {
+                    remainTask: function() { //筛选未完成的记录
+                        var search = this.search_name;
+                        this.tasks=this.sort(this.tasks);
+                        if(search){
+                            return this.tasks.filter(function(product) {
+                                return Object.keys(product).some(function(key) {
+                                    return String(product[key]).toLowerCase().indexOf(search) > -1
+                                })
+                            })
+                        }else{
+                            return this.tasks.filter(function(task) { //filter过滤器
+                                return ! task.complete;
+                            })
+                        }
+                    },
+                    filterTask: function() { //筛选已完成的记录
+                       
+                            return this.tasks.filter(function(task) {
+                                return task.complete;
+                            })
+                        
+                    },
+                    curTask: function(){
+                    return this.tasks.filter(function(task)
+                    {
+                        var time=[];
+                        for(let i=0;i<this.tasks.length;i++)
+                        {
+                            if(this.tasks[i].time===this.curDate)
+                            {
+                                time.push(this.tasks[i]);
+                            } 
+                        }
+                        return time;
+                    })
+                    },
+                   
+                    
+                }
+                });
+               
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+          $("#hide").click(function(){
+          $("ol").hide();
+          });
+          $("#show").click(function(){
+          $("ol").show();
+          });
+        });
+        </script>
+        <script>
+            $(function(){
+                $("#time").text(getNowFormatDate());
+            });
+            function getNowFormatDate(){
+                var date = new Date();
+                var day=["一","二","三","四","五","六","日"];
+                var a=date.getDay()-1;
+                var currentdate = date.getFullYear() +"-"+ (date.getMonth()+1) + "-"+ date.getDate()+"  "+"星期"+day[a];
+                return currentdate;
+            };
+            $("#bttn").click(function(){
+                $("#app").css("background","#58CD83");
+            });
+            $("#bttn1").click(function(){
+                $("#app").css("background","#E4E8E6");
+            })
+           
+        </script>
+        
+   
+</html>
